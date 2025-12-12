@@ -1,6 +1,6 @@
 # enea-vault
 Local AI profile builder for Android
-# ENEA Vault - One-Tap AI Profile Builder
+# ENEA-Vault - One-Tap AI Profile Builder
 
 > 🚀 Your personal AI assistant that organizes memories and creates beautiful profiles - with just 3 taps!
 
