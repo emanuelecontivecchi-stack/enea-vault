@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Models
+*.h5
+*.pth
+*.bin
+
+# System
+.DS_Store
+Thumbs.db
+
+# User data (generated)
+/output/
+/sorted/
+/input/
