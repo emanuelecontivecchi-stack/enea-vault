@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ENEA Vault - One Tap Setup</title>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --secondary: #8b5cf6;
+            --success: #10b981;
+            --bg: #0f172a;
+            --card: #1e293b;
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-top: 20px;
+        }
+        
+        .logo {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .tagline {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+        
+        .step-card {
+            background: var(--card);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 25px;
+            border: 2px solid #334155;
+            transition: all 0.3s ease;
+        }
+        
+        .step-card.active {
+            border-color: var(--primary);
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.2);
+        }
+        
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+        }
+        
+        .step-title {
+            font-size: 1.4rem;
+            margin-bottom: 10px;
+        }
+        
+        .step-desc {
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+        
+        .btn {
+            display: block;
+            width: 100%;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 18px 30px;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            text-align: center;
+            transition: all 0.2s;
+            margin: 10px 0;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.3);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .btn-success {
+            background: var(--success);
+        }
+        
+        .btn-disabled {
+            background: #475569;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+        
+        .btn-disabled:hover {
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .status-box {
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid var(--primary);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+            text-align: left;
+        }
+        
+        .status-box h4 {
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .qr-container {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            max-width: 200px;
+            margin: 20px auto;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #334155;
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .progress-bar {
+            height: 6px;
+            background: #334155;
+            border-radius: 3px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: var(--primary);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        .success-check {
+            color: var(--success);
+            font-size: 3rem;
+            text-align: center;
+            margin: 15px 0;
+            display: none;
+        }
+        
+        .note {
+            background: rgba(245, 158, 11, 0.1);
+            border-left: 4px solid #f59e0b;
+            padding: 12px 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+            text-align: left;
+        }
+        
+        code {
+            background: #1e293b;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .step-card {
+                padding: 20px;
+            }
+            
+            .btn {
+                padding: 20px;
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="logo">ENEA VAULT</h1>
+            <p class="tagline">Your personal AI memory assistant</p>
+            <p style="color: #64748b; margin-top: 20px;">Just tap the buttons below. No typing required.</p>
+        </div>
+        
+        <!-- STEP 1: INSTALL TERMUX -->
+        <div class="step-card active" id="step1">
+            <div class="step-number">1</div>
+            <h2 class="step-title">Install Termux</h2>
+            <p class="step-desc">Tap below to install the Termux app (our AI engine).</p>
+            
+            <div class="status-box">
+                <h4>📱 What is Termux?</h4>
+                <p>It's a safe app that lets us run AI on your phone without the internet. It's like having a mini-computer in your pocket.</p>
+            </div>
+            
+            <a href="https://f-droid.org/repo/com.termux_118.apk" class="btn" id="installBtn" target="_blank">
+                📲 Tap to Install Termux
+            </a>
+            
+            <p class="step-desc" id="installStatus">Waiting for installation...</p>
+            
+            <div class="loading" id="installLoading">
+                <div class="spinner"></div>
+                <p>Opening app store...</p>
+            </div>
+        </div>
+        
+        <!-- STEP 2: AUTOMATIC SETUP -->
+        <div class="step-card hidden" id="step2">
+            <div class="step-number">2</div>
+            <h2 class="step-title">Automatic Setup</h2>
+            <p class="step-desc">Tap to automatically install everything. This takes 2-3 minutes.</p>
+            
+            <div class="note">
+                <strong>⚠️ Important:</strong> Keep Termux open and allow storage access when prompted.
+            </div>
+            
+            <button class="btn" id="setupBtn" onclick="startAutoSetup()">
+                ⚙️ Tap to Auto-Setup Everything
+            </button>
+            
+            <div class="progress-bar">
+                <div class="progress-fill" id="setupProgress"></div>
+            </div>
+            
+            <p class="step-desc" id="setupStatus">Ready to setup</p>
+            
+            <div class="loading" id="setupLoading">
+                <div class="spinner"></div>
+                <p>Installing AI engine...</p>
+            </div>
+            
+            <div class="success-check" id="setupSuccess">✓</div>
+        </div>
+        
+        <!-- STEP 3: LAUNCH APP -->
+        <div class="step-card hidden" id="step3">
+            <div class="step-number">3</div>
+            <h2 class="step-title">Launch Your AI Assistant</h2>
+            <p class="step-desc">Tap to start your personal AI and open the app.</p>
+            
+            <button class="btn btn-success" id="launchBtn" onclick="launchApp()">
+                🚀 Tap to Launch ENEA Vault
+            </button>
+            
+            <div class="loading" id="launchLoading">
+                <div class="spinner"></div>
+                <p>Starting AI server...</p>
+            </div>
+            
+            <p class="step-desc">Your AI will open in a new window</p>
+            
+            <!-- QR Code for laptop users -->
+            <div class="hidden" id="qrSection">
+                <p style="text-align: center; margin: 20px 0;">Or scan this QR code from your phone:</p>
+                <div class="qr-container">
+                    <canvas id="qrCode"></canvas>
+                </div>
+            </div>
+            
+            <div class="note">
+                <strong>💡 Tip:</strong> Keep Termux running in the background while using the app.
+            </div>
+        </div>
+        
+        <!-- STEP 4: USE THE APP -->
+        <div class="step-card hidden" id="step4">
+            <div class="step-number">4</div>
+            <h2 class="step-title">You're Ready! 🎉</h2>
+            <p class="step-desc">Your personal AI is running. Tap below to open it:</p>
+            
+            <a href="http://localhost:5000" target="_blank" class="btn btn-success" id="openAppBtn">
+                🌐 Open ENEA Vault Interface
+            </a>
+            
+            <div style="text-align: left; margin-top: 30px; padding: 20px; background: rgba(255,255,255,0.05); border-radius: 10px;">
+                <h3 style="margin-bottom: 15px;">📖 How to use:</h3>
+                <ol style="margin: 15px 0; padding-left: 20px;">
+                    <li style="margin-bottom: 10px;">Put photos in <strong>ENEA_Vault/input/</strong> folder</li>
+                    <li style="margin-bottom: 10px;">Click "Sort Photos" in the app</li>
+                    <li style="margin-bottom: 10px;">Answer a few questions</li>
+                    <li style="margin-bottom: 10px;">Get your beautiful profile!</li>
+                </ol>
+                <p><em>Keep Termux running in background.</em></p>
+            </div>
+        </div>
+        
+        <!-- TROUBLESHOOTING -->
+        <div class="step-card hidden" id="troubleshooting">
+            <h2>🔧 Need Help?</h2>
+            <p>If something didn't work:</p>
+            
+            <div class="status-box">
+                <h4>Manual Setup</h4>
+                <p>Open Termux and paste these commands one by one:</p>
+                <div style="background: #0a0a0a; padding: 15px; border-radius: 8px; margin: 10px 0; overflow-x: auto;">
+                    <code style="color: #00ff9d; display: block;">
+pkg update -y && pkg upgrade -y<br>
+pkg install python -y<br>
+pkg install libjpeg-turbo libpng wget -y<br>
+termux-setup-storage<br>
+mkdir -p /storage/emulated/0/ENEA_Vault/input<br>
+mkdir -p /storage/emulated/0/ENEA_Vault/sorted<br>
+mkdir -p /storage/emulated/0/ENEA_Vault/output<br>
+cd /storage/emulated/0/ENEA_Vault<br>
+wget -O app.py https://raw.githubusercontent.com/emanuelecontivecchi-stack/enea-vault/main/app.py<br>
+wget -O requirements.txt https://raw.githubusercontent.com/emanuelecontivecchi-stack/enea-vault/main/requirements.txt<br>
+pip install -r requirements.txt<br>
+python app.py
+                    </code>
+                </div>
+            </div>
+            
+            <button class="btn" onclick="resetSetup()">
+                🔄 Try Auto-Setup Again
+            </button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+    <script>
+        // Current step tracking
+        let currentStep = 1;
+        let isAndroid = /Android/i.test(navigator.userAgent);
+        let isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        
+        // Initialize
+        window.onload = function() {
+            if (!isAndroid) {
+                // Not Android - adjust UI
+                document.getElementById('installBtn').textContent = '📱 Get Termux (Android Only)';
+                document.getElementById('installBtn').onclick = function(e) {
+                    e.preventDefault();
+                    alert('Termux is for Android only. Please use an Android phone, or scan the QR code when it appears.');
+                    showQRCodeEarly();
+                };
+                
+                document.querySelector('#step1 .step-desc').textContent = 'Termux is for Android phones. On laptop:';
+                
+                const note = document.createElement('div');
+                note.className = 'note';
+                note.innerHTML = '<strong>💻 For Laptop Users:</strong> Scan the QR code when it appears to continue on your phone.';
+                document.getElementById('step1').appendChild(note);
+            }
+            
+            // Auto-advance if URL has #setup
+            if (window.location.hash === '#setup') {
+                document.getElementById('step1').classList.remove('active');
+                document.getElementById('step2').classList.remove('hidden');
+                document.getElementById('step2').classList.add('active');
+                currentStep = 2;
+            }
+        };
+        
+        // STEP 1: Install Termux
+        document.getElementById('installBtn').addEventListener('click', function(e) {
+            if (!isAndroid) return; // Already handled
+            
+            const installLoading = document.getElementById('installLoading');
+            const installStatus = document.getElementById('installStatus');
+            
+            installLoading.style.display = 'block';
+            installStatus.textContent = 'Opening app store...';
+            
+            // Try multiple app store links
+            const urls = [
+                'https://f-droid.org/repo/com.termux_118.apk',
+                'market://details?id=com.termux',
+                'https://play.google.com/store/apps/details?id=com.termux',
+                'fdroid://package/com.termux'
+            ];
+            
+            // Open all URLs (one will work)
+            urls.forEach(url => {
+                setTimeout(() => {
+                    window.open(url, '_blank');
+                }, 100);
+            });
+            
+            // Move to next step after delay
+            setTimeout(() => {
+                document.getElementById('step1').classList.remove('active');
+                document.getElementById('step2').classList.remove('hidden');
+                document.getElementById('step2').classList.add('active');
+                installStatus.textContent = 'Termux installed! Open Termux to continue.';
+                installLoading.style.display = 'none';
+                currentStep = 2;
+            }, 3000);
+        });
+        
+        // STEP 2: Automatic Setup via Termux URL Scheme
+        function startAutoSetup() {
+            const setupLoading = document.getElementById('setupLoading');
+            const setupBtn = document.getElementById('setupBtn');
+            const setupStatus = document.getElementById('setupStatus');
+            const progressFill = document.getElementById('setupProgress');
+            
+            setupLoading.style.display = 'block';
+            setupBtn.disabled = true;
+            setupBtn.textContent = '⏳ Installing...';
+            setupStatus.textContent = 'Starting setup...';
+            
+            // The setup command for Termux
+            const setupScript = `#!/data/data/com.termux/files/usr/bin/bash
+echo "🚀 Starting ENEA Vault setup..."
+echo "[1/8] Updating packages..."
+pkg update -y && pkg upgrade -y
+echo "[2/8] Installing Python..."
+pkg install python -y
+echo "[3/8] Installing dependencies..."
+pkg install libjpeg-turbo libpng wget curl -y
+echo "[4/8] Requesting storage permission..."
+termux-setup-storage
+sleep 2
+echo "[5/8] Creating vault directories..."
+mkdir -p /storage/emulated/0/ENEA_Vault/input
+mkdir -p /storage/emulated/0/ENEA_Vault/sorted
+mkdir -p /storage/emulated/0/ENEA_Vault/output
+echo "[6/8] Downloading ENEA Vault..."
+cd /storage/emulated/0/ENEA_Vault
+wget -O app.py https://raw.githubusercontent.com/emanuelecontivecchi-stack/enea-vault/main/app.py
+wget -O requirements.txt https://raw.githubusercontent.com/emanuelecontivecchi-stack/enea-vault/main/requirements.txt
+echo "[7/8] Installing Python packages..."
+pip install --upgrade pip
+pip install flask pillow torch torchvision transformers nsfw-detector --quiet
+echo "[8/8] Setup complete! 🎉"
+echo "✅ ENEA Vault is ready!"
+echo "Run: cd /storage/emulated/0/ENEA_Vault && python app.py"
+`;
+            
+            // Encode for URL
+            const encodedScript = encodeURIComponent(setupScript);
+            
+            // Try to open Termux with the command
+            const termuxUrl = `termux://run-command?command=${encodedScript}`;
+            
+            // Create hidden iframe to launch Termux
+            const iframe = document.createElement('iframe');
+            iframe.style.display = 'none';
+            iframe.src = termuxUrl;
+            document.body.appendChild(iframe);
+            
+            // Simulate progress for user feedback
+            let progress = 0;
+            const progressInterval = setInterval(() => {
+                progress += 8;
+                if (progress > 100) progress = 100;
+                progressFill.style.width = progress + '%';
+                
+                const stages = [
+                    "Updating packages...",
+                    "Installing Python...",
+                    "Installing dependencies...",
+                    "Requesting storage access...",
+                    "Creating folders...",
+                    "Downloading app...",
+                    "Installing AI libraries...",
+                    "Finalizing setup..."
+                ];
+                
+                const stageIndex = Math.floor(progress / 12.5);
+                if (stageIndex < stages.length) {
+                    setupStatus.textContent = stages[stageIndex] + ` (${progress}%)`;
+                }
+                
+                if (progress >= 100) {
+                    clearInterval(progressInterval);
+                    setupLoading.style.display = 'none';
+                    document.getElementById('setupSuccess').style.display = 'block';
+                    setupStatus.textContent = '✅ Setup complete!';
+                    setupBtn.textContent = '✓ Installed Successfully';
+                    
+                    // Move to next step
+                    setTimeout(() => {
+                        document.getElementById('step2').classList.remove('active');
+                        document.getElementById('step3').classList.remove('hidden');
+                        document.getElementById('step3').classList.add('active');
+                        currentStep = 3;
+                        showQRCode();
+                    }, 1500);
+                }
+            }, 800); // Update every 0.8 seconds
+            
+            // Fallback: If setup seems stuck, show troubleshooting
+            setTimeout(() => {
+                if (progress < 30) {
+                    clearInterval(progressInterval);
+                    showTroubleshooting();
+                }
+            }, 15000); // 15 second timeout
+        }
+        
+        // STEP 3: Launch the app
+        function launchApp() {
+            const launchLoading = document.getElementById('launchLoading');
+            const launchBtn = document.getElementById('launchBtn');
+            
+            launchLoading.style.display = 'block';
+            launchBtn.disabled = true;
+            launchBtn.textContent = '⏳ Starting Server...';
+            
+            // Command to start the server
+            const launchScript = `#!/data/data/com.termux/files/usr/bin/bash
+cd /storage/emulated/0/ENEA_Vault
+python app.py &
+sleep 2
+echo "✅ Server started at http://localhost:5000"
+termux-open-url http://localhost:5000
+`;
+            
+            const encodedScript = encodeURIComponent(launchScript);
+            const termuxUrl = `termux://run-command?command=${encodedScript}`;
+            
+            // Try to launch via Termux
+            const iframe = document.createElement('iframe');
+            iframe.style.display = 'none';
+            iframe.src = termuxUrl;
+            document.body.appendChild(iframe);
+            
+            // Also try direct browser open as fallback
+            setTimeout(() => {
+                window.open('http://localhost:5000', '_blank');
+            }, 1000);
+            
+            // Show final step
+            setTimeout(() => {
+                launchLoading.style.display = 'none';
+                document.getElementById('step3').classList.remove('active');
+                document.getElementById('step4').classList.remove('hidden');
+                document.getElementById('step4').classList.add('active');
+                currentStep = 4;
+            }, 3000);
+        }
+        
+        // Generate QR code for laptop users
+        function showQRCode() {
+            QRCode.toCanvas(document.getElementById('qrCode'), 'http://localhost:5000', {
+                width: 160,
+                margin: 1,
+                color: {
+                    dark: '#000000',
+                    light: '#FFFFFF'
+                }
+            }, function(error) {
+                if (error) console.error(error);
+            });
+            document.getElementById('qrSection').classList.remove('hidden');
+        }
+        
+        // Show QR code early for non-Android users
+        function showQRCodeEarly() {
+            document.getElementById('step1').classList.remove('active');
+            document.getElementById('step3').classList.remove('hidden');
+            document.getElementById('step3').classList.add('active');
+            currentStep = 3;
+            showQRCode();
+        }
+        
+        // Show troubleshooting section
+        function showTroubleshooting() {
+            document.getElementById('step2').classList.remove('active');
+            document.getElementById('troubleshooting').classList.remove('hidden');
+            document.getElementById('troubleshooting').classList.add('active');
+        }
+        
+        // Reset setup
+        function resetSetup() {
+            document.getElementById('troubleshooting').classList.remove('active');
+            document.getElementById('step2').classList.remove('hidden');
+            document.getElementById('step2').classList.add('active');
+            
+            // Reset progress
+            document.getElementById('setupProgress').style.width = '0%';
+            document.getElementById('setupBtn').disabled = false;
+            document.getElementById('setupBtn').textContent = '⚙️ Tap to Auto-Setup Everything';
+            document.getElementById('setupStatus').textContent = 'Ready to try again';
+            document.getElementById('setupLoading').style.display = 'none';
+            document.getElementById('setupSuccess').style.display = 'none';
+        }
+        
+        // Copy to clipboard helper (for troubleshooting)
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Commands copied to clipboard!');
+            });
+        }
+    </script>
+</body>
+</html>
